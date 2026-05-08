@@ -61,13 +61,18 @@ export default function Display() {
     return isNegative ? `+${m}:${s}` : `${m}:${s}`;
   };
 
-  const getLocalTimeString = () => {
+  const getLocalTimeElement = () => {
     let hours = localTime.getHours();
     const minutes = localTime.getMinutes().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
-    return `${hours}:${minutes} ${ampm}`;
+    return (
+      <span style={{ whiteSpace: 'nowrap' }}>
+        {hours}:{minutes}
+        <span style={{ fontSize: '0.35em', marginLeft: '0.2em' }}>{ampm}</span>
+      </span>
+    );
   };
 
   const handleFullscreen = () => {
@@ -102,7 +107,7 @@ export default function Display() {
         className={timerClass}
         style={{ color: state.theme.text }}
       >
-        {state.displayMode === 'clock' ? getLocalTimeString() : formatTime(state.remainingSeconds)}
+        {state.displayMode === 'clock' ? getLocalTimeElement() : formatTime(state.remainingSeconds)}
       </div>
 
       {state.message && (

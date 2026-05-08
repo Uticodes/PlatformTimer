@@ -14,6 +14,8 @@ export default function Operator() {
   const [theme, setTheme] = useState({ bg: '#000000', text: '#ef4444' });
   const [msgInput, setMsgInput] = useState('');
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showPresetModal, setShowPresetModal] = useState(false);
+  const [presetNameInput, setPresetNameInput] = useState('');
 
   // New Features State
   const [displayMode, setDisplayMode] = useState('timer'); // 'timer' | 'clock'
@@ -224,10 +226,19 @@ export default function Operator() {
       alert("You can only save up to 5 presets. Please delete one first.");
       return;
     }
-    const name = prompt("Enter a name for this preset (e.g., 'Sermon'):");
-    if (name) {
-      setPresets([...presets, { name, minutes: inputMinutes || '0', seconds: inputSeconds || '0' }]);
+    setPresetNameInput('');
+    setShowPresetModal(true);
+  };
+
+  const confirmSavePreset = () => {
+    if (presetNameInput.trim()) {
+      setPresets([...presets, { name: presetNameInput.trim(), minutes: inputMinutes || '0', seconds: inputSeconds || '0' }]);
     }
+    setShowPresetModal(false);
+  };
+
+  const cancelSavePreset = () => {
+    setShowPresetModal(false);
   };
 
   const handleLoadPreset = (preset) => {
@@ -458,6 +469,28 @@ export default function Operator() {
             <div className="modal-actions">
               <button className="btn btn-secondary" onClick={cancelReset}>Cancel</button>
               <button className="btn btn-primary" onClick={confirmReset}>Yes, Reset</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPresetModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="modal-title">Save Preset</h3>
+            <p className="modal-body" style={{ marginBottom: '16px' }}>Enter a name for this preset (e.g., 'Sermon'):</p>
+            <input 
+              type="text" 
+              className="input" 
+              value={presetNameInput} 
+              onChange={e => setPresetNameInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && confirmSavePreset()}
+              style={{ marginBottom: '24px' }}
+              autoFocus
+            />
+            <div className="modal-actions">
+              <button className="btn btn-secondary" onClick={cancelSavePreset}>Cancel</button>
+              <button className="btn btn-primary" onClick={confirmSavePreset}>Save</button>
             </div>
           </div>
         </div>

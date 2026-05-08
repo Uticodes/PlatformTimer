@@ -20,7 +20,7 @@ export default function Operator() {
   // New Features State
   const [displayMode, setDisplayMode] = useState('timer'); // 'timer' | 'clock'
   const [enableOvertime, setEnableOvertime] = useState(false);
-  const [enableBlinkingBarrier, setEnableBlinkingBarrier] = useState(false);
+  const [enableBlinkingBarrier, setEnableBlinkingBarrier] = useState(true);
 
   // Presets State
   const [presets, setPresets] = useState(() => {
@@ -36,7 +36,7 @@ export default function Operator() {
     theme: { bg: '#000000', text: '#ef4444' },
     displayMode: 'timer',
     enableOvertime: false,
-    enableBlinkingBarrier: false,
+    enableBlinkingBarrier: true,
     totalSeconds: 300
   });
 
@@ -479,10 +479,10 @@ export default function Operator() {
           <div className="modal-content">
             <h3 className="modal-title">Save Preset</h3>
             <p className="modal-body" style={{ marginBottom: '16px' }}>Enter a name for this preset (e.g., 'Sermon'):</p>
-            <input 
-              type="text" 
-              className="input" 
-              value={presetNameInput} 
+            <input
+              type="text"
+              className="input"
+              value={presetNameInput}
               onChange={e => setPresetNameInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && confirmSavePreset()}
               style={{ marginBottom: '24px' }}

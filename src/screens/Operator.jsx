@@ -16,6 +16,8 @@ export default function Operator() {
   const [showResetModal, setShowResetModal] = useState(false);
   const [showPresetModal, setShowPresetModal] = useState(false);
   const [presetNameInput, setPresetNameInput] = useState('');
+  const [screens, setScreens] = useState([]);
+  const [showScreenModal, setShowScreenModal] = useState(false);
 
   // New Features State
   const [displayMode, setDisplayMode] = useState('timer'); // 'timer' | 'clock'
@@ -23,9 +25,17 @@ export default function Operator() {
   const [enableBlinkingBarrier, setEnableBlinkingBarrier] = useState(true);
 
   // Presets State
+  const defaultPresets = [
+    { name: '5 Mins', minutes: '5', seconds: '0' },
+    { name: '10 Mins', minutes: '10', seconds: '0' },
+    { name: '15 Mins', minutes: '15', seconds: '0' },
+    { name: '20 Mins', minutes: '20', seconds: '0' }
+  ];
+
   const [presets, setPresets] = useState(() => {
     const saved = localStorage.getItem('church_timer_presets');
-    return saved ? JSON.parse(saved) : [];
+    const parsed = saved ? JSON.parse(saved) : null;
+    return parsed && parsed.length > 0 ? parsed : defaultPresets;
   });
 
   const workerRef = useRef(null);
@@ -222,8 +232,8 @@ export default function Operator() {
   };
 
   const handleSavePreset = () => {
-    if (presets.length >= 5) {
-      alert("You can only save up to 5 presets. Please delete one first.");
+    if (presets.length >= 10) {
+      alert("You can only save up to 10 presets. Please delete one first.");
       return;
     }
     setPresetNameInput('');
@@ -259,13 +269,36 @@ export default function Operator() {
     setPresets(presets.filter((_, i) => i !== index));
   };
 
+  const handleOpenDisplay = async () => {
+    try {
+      if ('getScreenDetails' in window) {
+        const screenDetails = await window.getScreenDetails();
+        if (screenDetails.screens.length > 1) {
+          setScreens(screenDetails.screens);
+          setShowScreenModal(true);
+          return;
+        }
+      }
+    } catch (err) {
+      console.error("Screen detection failed or permission denied:", err);
+    }
+    // Fallback: just open it normally
+    window.open('/display', 'displayWindow', 'width=1280,height=720');
+  };
+
+  const openOnScreen = (screen) => {
+    const features = `left=${screen.availLeft},top=${screen.availTop},width=${screen.availWidth},height=${screen.availHeight}`;
+    window.open('/display', 'displayWindow', features);
+    setShowScreenModal(false);
+  };
+
   return (
     <div className="operator-layout">
       <div className="operator-header">
         <h1><Settings className="text-primary" /> Operator Dashboard</h1>
         <button
           className="btn btn-primary"
-          onClick={() => window.open('/display', '_blank', 'width=1280,height=720')}
+          onClick={handleOpenDisplay}
         >
           <MonitorPlay size={18} />
           Open Display Window
@@ -405,6 +438,15 @@ export default function Operator() {
             <button className="btn btn-secondary" onClick={handleClearMessage}>
               <Trash2 size={18} /> Clear
             </button>
+            <button
+              className="btn btn-secondary"
+              onClick={handleOpenDisplay}
+              title="Move an already open display to a different screen"
+              style={{ marginLeft: 'auto' }}
+            >
+              <MonitorPlay size={18} />
+              Switch Screen
+            </button>
           </div>
         </div>
 
@@ -491,6 +533,40 @@ export default function Operator() {
             <div className="modal-actions">
               <button className="btn btn-secondary" onClick={cancelSavePreset}>Cancel</button>
               <button className="btn btn-primary" onClick={confirmSavePreset}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showScreenModal && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '500px' }}>
+            <h3 className="modal-title">Select Display Screen</h3>
+            <p className="modal-body" style={{ marginBottom: '16px' }}>Choose which screen to open the display on:</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+              {screens.map((screen, index) => (
+                <button
+                  key={index}
+                  className={`btn ${screen.isInternal ? 'btn-secondary' : 'btn-primary'}`}
+                  onClick={() => openOnScreen(screen)}
+                  style={{ justifyContent: 'flex-start', padding: '12px 16px' }}
+                >
+                  <MonitorPlay size={18} style={{ marginRight: '12px', flexShrink: 0 }} />
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontWeight: 'bold' }}>
+                      {screen.label || `Screen ${index + 1}`} {screen.isInternal ? '(Internal)' : '(External)'}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                      Resolution: {screen.width}x{screen.height}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="modal-actions">
+              <button className="btn btn-secondary" onClick={() => setShowScreenModal(false)}>Cancel</button>
             </div>
           </div>
         </div>

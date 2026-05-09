@@ -438,11 +438,18 @@ export default function Operator() {
             <button className="btn btn-secondary" onClick={handleClearMessage}>
               <Trash2 size={18} /> Clear
             </button>
+          </div>
+        </div>
+
+        {/* Display Management Panel */}
+        <div className="glass-panel">
+          <h2 className="section-title"><MonitorPlay size={20} /> Display</h2>
+          <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', marginBottom: '16px' }}>Move the projection to a different screen without restarting.</p>
+          <div className="controls-row" style={{ justifyContent: 'flex-start' }}>
             <button
               className="btn btn-secondary"
               onClick={handleOpenDisplay}
               title="Move an already open display to a different screen"
-              style={{ marginLeft: 'auto' }}
             >
               <MonitorPlay size={18} />
               Switch Screen

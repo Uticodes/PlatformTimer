@@ -87,7 +87,7 @@ export default function Display() {
 
   const isBlinking = state.enableBlinkingBarrier && state.displayMode === 'timer' && state.totalSeconds > 0 && state.remainingSeconds <= (state.totalSeconds * 0.05);
 
-  const timerClass = `display-timer ${state.message ? (needsScroll ? 'shrunk-scroll' : 'shrunk') : 'normal'}`;
+  const timerClass = `display-timer ${state.displayMode === 'clock' ? 'clock-mode ' : ''}${state.message ? (needsScroll ? 'shrunk-scroll' : 'shrunk') : 'normal'}`;
   const messageClass = `display-message ${needsScroll ? 'scrolling' : 'static'}`;
 
   return (

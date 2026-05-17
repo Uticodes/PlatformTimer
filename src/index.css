@@ -326,6 +326,18 @@ body {
   margin-bottom: 2rem;
 }
 
+.display-timer.clock-mode.normal {
+  font-size: clamp(8rem, 25vw, 30rem);
+}
+
+.display-timer.clock-mode.shrunk {
+  font-size: clamp(5rem, 18vw, 20rem);
+}
+
+.display-timer.clock-mode.shrunk-scroll {
+  font-size: clamp(6rem, 20vw, 25rem);
+}
+
 .display-message-container {
   width: 100%;
   overflow: hidden;
